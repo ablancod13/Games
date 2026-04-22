@@ -9,12 +9,14 @@ export class AntibioticItem extends Phaser.GameObjects.Container {
     scene.add.existing(this);
 
     this._sprite = scene.add.image(0, 0, 'ab_TOL_TAZ');
-    this._label  = scene.add.text(0, ITEM_H / 2 + 6, '', {
-      fontSize: '11px',
+    this._label  = scene.add.text(0, ITEM_H / 2 + 2, '', {
+      fontSize: '14px',
       fontFamily: 'Arial Black, Arial',
       color: '#FFFFFF',
       stroke: '#000000',
-      strokeThickness: 3,
+      strokeThickness: 5,
+      backgroundColor: '#000000CC',
+      padding: { x: 6, y: 3 },
       align: 'center',
     }).setOrigin(0.5, 0);
 

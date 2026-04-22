@@ -68,6 +68,11 @@ export class GameScene extends Phaser.Scene {
     this._dead   = false;
     this._pauseOverlay = null;
 
+    // Lives system
+    this._lives           = C.MAX_LIVES;
+    this._obstacleHitCount = 0;
+    this._invincibleUntil  = 0;
+
     // Run-start camera flash
     this.cameras.main.flash(400, 255, 255, 255);
 
@@ -167,19 +172,44 @@ export class GameScene extends Phaser.Scene {
   }
 
   _onObstacleHit(obs) {
-    // Try shield first
+    // Skip if still in post-hit invincibility window
+    if (this.time.now < this._invincibleUntil) { obs.deactivate(); return; }
+
     if (this._power.tryAbsorbHit()) {
       burst(this, this._doctor.x, this._doctor.y, 'star', 10);
       obs.deactivate();
       return;
     }
 
-    if (this._doctor.takeHit()) {
-      screenFlash(this, 'red', 200);
-      this.cameras.main.shake(300, 0.015);
-      obs.deactivate();
+    if (!this._doctor.takeHit()) return;
 
-      // Game over after hit (single life)
+    obs.deactivate();
+    this._obstacleHitCount++;
+    screenFlash(this, 'red', 200);
+    this.cameras.main.shake(300, 0.015);
+
+    const hitInCycle = this._obstacleHitCount % C.OBS_HITS_PER_LIFE;
+    if (hitInCycle === 0) {
+      // Every 3rd hit costs a life
+      this._loseLife('obstacle');
+    } else {
+      // Warning: show how many hits accumulated
+      this._invincibleUntil = this.time.now + 1200;
+      scorePopup(this, this._doctor.x, this._doctor.y - 30,
+        `${hitInCycle}/${C.OBS_HITS_PER_LIFE} golpes`, '#FF8800');
+    }
+  }
+
+  _loseLife(source) {
+    this._lives = Math.max(0, this._lives - 1);
+    this._invincibleUntil = this.time.now + 2000;
+
+    this._hud.updateLives(this._lives);
+    screenFlash(this, 'red', 500);
+    this.cameras.main.shake(500, 0.03);
+    scorePopup(this, this._doctor.x, this._doctor.y - 80, '-1 VIDA', '#FF4444');
+
+    if (this._lives <= 0) {
       this.time.delayedCall(800, () => this._endRun());
     }
   }
@@ -229,20 +259,20 @@ export class GameScene extends Phaser.Scene {
       burst(this, this._doctor.x, this._doctor.y, 'star', 14);
       screenFlash(this, 'green', 300);
 
-      // Track mechanism-specific stats
       const mechanisms = this.registry.get('phaseMechanisms') || [];
       if (mechanisms.includes('KPC')) saveSystem.incrementStat('kpc_treated');
       if (mechanisms.includes('MBL')) saveSystem.incrementStat('mbl_treated');
+    } else {
+      // Failed treatment costs one life
+      this._loseLife('antibiotic');
     }
 
-    // Apply coin delta from the phase
     const delta = coinsEarned || 0;
     if (delta !== 0) {
       this._score.addCoins(delta);
       scorePopup(this, this._doctor.x, this._doctor.y - 60, delta > 0 ? `+${delta}` : `${delta}`, delta > 0 ? '#44FF44' : '#FF4444');
     }
 
-    // Update score counters
     for (let i = 0; i < (correctCatches || 0); i++) this._score.onAntibioticCatch(1);
     for (let i = 0; i < (wrongCatches || 0); i++) this._score.onAntibioticCatch(-2);
   }

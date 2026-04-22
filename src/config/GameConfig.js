@@ -19,22 +19,20 @@ export const C = {
   // Runner speed (pixels/sec)
   INITIAL_SPEED: 260,
   MAX_SPEED: 700,
-  // Speed gained per meter travelled
   SPEED_PER_METER: 0.06,
 
-  // 1 game-meter = this many pixels of world scroll
   PIXELS_PER_METER: 10,
 
-  // Obstacle spacing (pixels between spawn points)
-  MIN_OBS_GAP: 380,
-  MAX_OBS_GAP: 720,
+  // Obstacle spacing — wider gaps so obstacles are less frequent
+  MIN_OBS_GAP: 620,
+  MAX_OBS_GAP: 1100,
 
   // Corridor coin spacing (pixels)
-  COIN_SPACING: 220,
+  COIN_SPACING: 280,
 
-  // Patient encounter distance range (meters)
-  PATIENT_MIN_DIST: 300,
-  PATIENT_MAX_DIST: 600,
+  // Patient encounter distance range (meters) — more frequent
+  PATIENT_MIN_DIST: 150,
+  PATIENT_MAX_DIST: 320,
 
   // Antibiotic phase duration (ms)
   PHASE_DURATION: 18000,
@@ -55,4 +53,8 @@ export const C = {
   DOCTOR_H: 82,
   DOCTOR_SLIDE_W: 76,
   DOCTOR_SLIDE_H: 42,
+
+  // Lives system
+  MAX_LIVES: 3,
+  OBS_HITS_PER_LIFE: 3,   // obstacle hits needed to lose 1 life
 };

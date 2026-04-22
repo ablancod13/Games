@@ -456,6 +456,14 @@ export class AntibioticScene extends Phaser.Scene {
         align: 'center',
       }).setOrigin(0.5);
 
+      const lifeLossNote = healed ? null : this.add.text(0, -88, '💔 −1 vida al continuar', {
+        fontSize: '13px',
+        fontFamily: 'Arial',
+        color: '#FF9999',
+        align: 'center',
+      }).setOrigin(0.5);
+      if (lifeLossNote) overlay.add([lifeLossNote]);
+
       const accuracy = this._correctCatches + this._wrongCatches > 0
         ? Math.round(this._correctCatches / (this._correctCatches + this._wrongCatches) * 100)
         : 100;

@@ -50,6 +50,15 @@ export class HUD {
       color: '#88CCFF',
     }).setOrigin(1, 0).setDepth(21);
 
+    // Lives — 3 hearts, top-left below distance
+    this._livesText = scene.add.text(12, 36, '♥♥♥', {
+      fontSize: '17px',
+      fontFamily: 'Arial',
+      color: '#FF3344',
+      stroke: '#220011',
+      strokeThickness: 3,
+    }).setDepth(21);
+
     // Streak indicator (appears when streak > 2)
     this._streakText = scene.add.text(W / 2, 56, '', {
       fontSize: '14px',
@@ -150,5 +159,21 @@ export class HUD {
   showMechanism(mechanisms) {
     const names = mechanisms.join(' + ');
     this.showHint(`⚠ Mecanismo activo: ${names}`);
+  }
+
+  updateLives(count) {
+    const full  = '♥'.repeat(Math.max(0, count));
+    const empty = '♡'.repeat(Math.max(0, 3 - count));
+    this._livesText.setText(full + empty);
+    this._livesText.setColor(count <= 1 ? '#FF8800' : '#FF3344');
+
+    // Pulse on life loss
+    this._scene.tweens.add({
+      targets: this._livesText,
+      scaleX: { from: 1.6, to: 1 },
+      scaleY: { from: 1.6, to: 1 },
+      duration: 400,
+      ease: 'Back.Out',
+    });
   }
 }
