@@ -75,7 +75,25 @@ export class BootScene extends Phaser.Scene {
 
       const s = steps[step];
       loadingText.setText(s.text);
-      s.fn();
+
+      try {
+        s.fn();
+      } catch (err) {
+        // Show error on screen to aid debugging
+        console.error('BootScene error at step "' + s.text + '":', err);
+        loadingText.setText('Error: ' + err.message);
+        this.add.text(W / 2, H / 2 + 180, '⚠ ' + s.text + '\n' + err.message, {
+          fontSize: '13px', fontFamily: 'Arial', color: '#FF4444',
+          align: 'center', wordWrap: { width: W - 40 },
+          backgroundColor: '#00000099', padding: { x: 8, y: 6 },
+        }).setOrigin(0.5);
+        // Skip broken step and continue
+        bar.width = ((step + 1) / steps.length) * 300;
+        step++;
+        this.time.delayedCall(100, runStep);
+        return;
+      }
+
       bar.width = ((step + 1) / steps.length) * 300;
       step++;
 

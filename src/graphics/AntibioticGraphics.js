@@ -1,5 +1,24 @@
 import { ANTIBIOTICS } from '../config/AntibioticsData.js';
 
+// Phaser 3 does not have fillArc or fillStar — use these helpers
+function fillArc(g, x, y, radius, startAngle, endAngle, anticlockwise) {
+  g.beginPath();
+  g.moveTo(x, y);
+  g.arc(x, y, radius, startAngle, endAngle, anticlockwise);
+  g.fillPath();
+}
+
+function fillStar(g, x, y, points, outerR, innerR, rotation) {
+  const step = Math.PI / points;
+  const pts = [];
+  for (let i = 0; i < points * 2; i++) {
+    const r = i % 2 === 0 ? outerR : innerR;
+    const angle = i * step + rotation - Math.PI / 2;
+    pts.push({ x: x + Math.cos(angle) * r, y: y + Math.sin(angle) * r });
+  }
+  g.fillPoints(pts, true);
+}
+
 // Generates one texture per antibiotic style
 export function generateAntibioticTextures(scene) {
   const g = scene.add.graphics();
@@ -120,8 +139,8 @@ function _vial(g, col) {
 function _pill(g, col) {
   // Round pill (SUL-DUR - grey, always wrong)
   g.fillStyle(col); g.fillCircle(28, 32, 20);
-  g.fillStyle(0x000000, 0.15); g.fillArc(28, 32, 20, 0, Math.PI, false);
-  g.fillStyle(0xFFFFFF, 0.15); g.fillArc(28, 32, 20, Math.PI, Math.PI * 2, false);
+  g.fillStyle(0x000000, 0.15); fillArc(g, 28, 32, 20, 0, Math.PI, false);
+  g.fillStyle(0xFFFFFF, 0.15); fillArc(g, 28, 32, 20, Math.PI, Math.PI * 2, false);
   g.lineStyle(2.5, _darken(col)); g.strokeCircle(28, 32, 20);
   // X mark (warning)
   g.lineStyle(3, 0xFF4444, 0.8);
@@ -146,10 +165,10 @@ function _goldGlow(g) {
   g.lineStyle(1, 0xFFEE88, 0.4); g.strokeRoundedRect(1, 1, 54, 70, 10);
   // Stars
   g.fillStyle(0xFFFF88, 0.9);
-  g.fillStar(8,  8,  5, 4, 2, 0);
-  g.fillStar(48, 8,  5, 4, 2, 0);
-  g.fillStar(8,  64, 5, 4, 2, 0);
-  g.fillStar(48, 64, 5, 4, 2, 0);
+  fillStar(g, 8,  8,  5, 4, 2, 0);
+  fillStar(g, 48, 8,  5, 4, 2, 0);
+  fillStar(g, 8,  64, 5, 4, 2, 0);
+  fillStar(g, 48, 64, 5, 4, 2, 0);
 }
 
 function _darken(hex, amt = 0x444444) {

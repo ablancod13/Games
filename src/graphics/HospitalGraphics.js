@@ -12,7 +12,7 @@ export function generateHospitalTextures(scene) {
 }
 
 function _genBgFar(scene) {
-  const TW = 960, TH = H;
+  const TW = 480, TH = H;
   const g = scene.add.graphics();
 
   // Wall base

@@ -1,3 +1,14 @@
+function fillStar(g, x, y, points, outerR, innerR, rotation) {
+  const step = Math.PI / points;
+  const pts = [];
+  for (let i = 0; i < points * 2; i++) {
+    const r = i % 2 === 0 ? outerR : innerR;
+    const angle = i * step + rotation - Math.PI / 2;
+    pts.push({ x: x + Math.cos(angle) * r, y: y + Math.sin(angle) * r });
+  }
+  g.fillPoints(pts, true);
+}
+
 // Generates small particle textures and provides helper functions for effects
 export function generateParticleTextures(scene) {
   const g = scene.add.graphics();
@@ -22,7 +33,7 @@ export function generateParticleTextures(scene) {
 
   // Star particle
   g.clear();
-  g.fillStyle(0xFFFF44, 0.9); g.fillStar(8, 8, 5, 7, 3, 0);
+  g.fillStyle(0xFFFF44, 0.9); fillStar(g, 8, 8, 5, 7, 3, 0);
   g.generateTexture('particle_star', 16, 16);
 
   // Speed line particle
