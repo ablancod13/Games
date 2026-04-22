@@ -30,9 +30,9 @@ export class Obstacle extends Phaser.GameObjects.Image {
     this.setActive(true).setVisible(true);
     this.setDepth(8);
 
-    // Resize static body
+    // Resize static body — pass parent y (GROUND_Y) so body.reset positions correctly with origin (0,1)
     this.body.setSize(typeData.w, typeData.bodyH);
-    this.body.reset(x, C.GROUND_Y - typeData.bodyH);
+    this.body.reset(x, C.GROUND_Y);
 
     return this;
   }
@@ -45,7 +45,7 @@ export class Obstacle extends Phaser.GameObjects.Image {
     if (!this.active) return;
     const dx = speed * delta / 1000;
     this.x -= dx;
-    this.body.reset(this.x, this.body.y);
+    this.body.reset(this.x, this.y); // this.y = GROUND_Y; body.y (top) is derived via getTopLeft with origin (0,1)
 
     if (this.x < -200) this.deactivate();
   }

@@ -10,12 +10,12 @@ export class SpawnSystem {
     this._obstaclePool  = createObstaclePool(scene, 12);
     this._patientPool   = createPatientPool(scene, 3);
 
-    this._nextObstacleX  = C.W + 300;
+    this._nextObstacleX  = 300;   // pixels of scroll remaining until next obstacle
     this._nextPatientDist = Phaser.Math.Between(C.PATIENT_MIN_DIST, C.PATIENT_MAX_DIST);
     this._lastPatientDist = 0;
 
     this._coins = [];
-    this._nextCoinX = C.W + 400;
+    this._nextCoinX = 400;        // pixels of scroll remaining until next coin row
 
     // Store active obstacles, patients, coins for external access
     this.obstacles = this._obstaclePool.getChildren();
@@ -39,15 +39,15 @@ export class SpawnSystem {
       if (c.x < -50) { c.setActive(false).setVisible(false); }
     });
 
-    // Spawn obstacles
+    // Spawn obstacles — countdown resets to MIN_OBS_GAP..MAX_OBS_GAP (both > 0)
     this._nextObstacleX -= dx;
-    if (this._nextObstacleX < C.W + 50) {
+    if (this._nextObstacleX <= 0) {
       this._spawnObstacle(speed, currentLevel);
     }
 
-    // Spawn coins
+    // Spawn coins — countdown resets to COIN_SPACING..COIN_SPACING*2 (both > 0)
     this._nextCoinX -= dx;
-    if (this._nextCoinX < C.W + 50) {
+    if (this._nextCoinX <= 0) {
       this._spawnCoinRow();
     }
 
@@ -88,7 +88,8 @@ export class SpawnSystem {
       }
       coin.setPosition(C.W + 60 + i * 44, height).setActive(true).setVisible(true).setScale(1);
 
-      // Bobbing animation
+      // Kill any tween from a previous use of this recycled coin, then add fresh bob
+      this._scene.tweens.killTweensOf(coin);
       this._scene.tweens.add({
         targets: coin,
         y: coin.y - 12,
@@ -117,9 +118,9 @@ export class SpawnSystem {
     this._obstaclePool.getChildren().forEach(o => o.deactivate());
     this._patientPool.forEach(p => p.deactivate());
     this._coins.forEach(c => { c.setActive(false).setVisible(false); });
-    this._nextObstacleX  = C.W + 300;
+    this._nextObstacleX  = 300;
     this._nextPatientDist = Phaser.Math.Between(C.PATIENT_MIN_DIST, C.PATIENT_MAX_DIST);
     this._lastPatientDist = 0;
-    this._nextCoinX = C.W + 400;
+    this._nextCoinX = 400;
   }
 }

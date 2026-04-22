@@ -26,10 +26,11 @@ export class GameScene extends Phaser.Scene {
     // Background
     this._bg = new BackgroundSystem(this);
 
-    // Ground physics body
+    // Ground physics body — refreshBody() is required after setDisplaySize to sync the 1×1 default texture's body to the scaled bounds
     this._ground = this.physics.add.staticImage(W / 2, C.GROUND_Y + 20, '__DEFAULT')
       .setVisible(false)
       .setDisplaySize(W, 40);
+    this._ground.refreshBody();
 
     // Doctor
     this._doctor = new Doctor(this, C.PLAYER_X, C.GROUND_Y - C.DOCTOR_H / 2);
